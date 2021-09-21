@@ -1,16 +1,18 @@
-import flask
-import os
-import yaml
-from flask_security import Security
-from flask_mail import Mail
-import logbook
 import logging
+import os
+
+import flask
+from flask_mail import Mail
+from flask_security import Security
+import logbook
 from logbook.compat import redirect_logging
-from werkzeug.middleware.proxy_fix import ProxyFix
 from raven.contrib.flask import Sentry
 from werkzeug.exceptions import HTTPException
+from werkzeug.middleware.proxy_fix import ProxyFix
+import yaml
 
-from .utils.profiling import profile_request_start, profile_request_end
+from .utils.profiling import profile_request_end, profile_request_start
+
 
 def create_app(config=None, setup_logging=True):
     if config is None:
@@ -36,6 +38,7 @@ def create_app(config=None, setup_logging=True):
                 app.config.update(yaml.full_load(yaml_file))
 
     app.config.update(config)
+    print(app.config)
 
     app.before_request(profile_request_start)
     app.after_request(profile_request_end)
@@ -62,6 +65,20 @@ def create_app(config=None, setup_logging=True):
         app.config['RAVEN_IGNORE_EXCEPTIONS'] = (HTTPException, SystemExit,)
         sentry = Sentry(app)    # pylint: disable=unused-variable
 
+    # security configs
+    # Generate a nice key using secrets.token_urlsafe()
+    app.config['SECRET_KEY'] = os.environ.get(
+        "SECRET_KEY", 
+        'zvIQolRA8pgvJymumI4LxdbwveX66pPxORPTQY4Lcfc'
+        )
+    # Bcrypt is set as default SECURITY_PASSWORD_HASH, which requires a salt
+    # Generate a good salt using: secrets.SystemRandom().getrandbits(128)
+    app.config['SECURITY_PASSWORD_SALT'] = os.environ.get(
+        "SECURITY_PASSWORD_SALT", 
+        '332112138300589137840620370244587911144'
+        )
+
+
     override_tb_location = os.environ.get('BACKSLASH_TRACEBACKS_PATH', None)
     if override_tb_location:
         app.config['TRACEBACK_DIR'] = override_tb_location
@@ -71,12 +88,13 @@ def create_app(config=None, setup_logging=True):
     Mail(app)
 
     from . import models
-    from .blueprints import rest, views, runtoken
+    from .blueprints import rest, runtoken, views
     from .blueprints.api.main import blueprint as api_blueprint
 
     models.db.init_app(app)
 
     from . import auth
+    
     Security(app, auth.user_datastore, register_blueprint=False)
 
     blueprints = [auth.auth, views.blueprint, api_blueprint, rest.blueprint, runtoken.blueprint]

@@ -30,6 +30,10 @@ _DEFAULTS = {
     'ldap_login_enabled': False,
     'ldap_uri': None,
     'ldap_base_dn': None,
+    'azure_ad_enabled': False,
+    'azure_ad_authority': None,
+    'azure_ad_client_id': None,
+    'azure_ad_client_secret': None,
 }
 
 @API(generates_activity=False, require_login=False)

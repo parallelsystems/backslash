@@ -1,17 +1,18 @@
 import functools
-import ldap
-import logbook
-import requests
-from flask import (abort, Blueprint, current_app, jsonify, request)
-from itsdangerous import BadSignature, TimedSerializer
 
+from flask import Blueprint, abort, current_app, jsonify, redirect, request, url_for
 from flask_login import logout_user
-from flask_simple_api import error_abort
 from flask_security import SQLAlchemyUserDatastore
 from flask_security.utils import login_user, verify_password
+from flask_simple_api import error_abort
+from itsdangerous import BadSignature, TimedSerializer
+import ldap
+import logbook
+import msal
+import requests
 
 from .config import get_runtime_config_private_dict
-from .models import db, Role, User
+from .models import Role, User, db
 from .utils.oauth2 import get_oauth2_identity
 
 _logger = logbook.Logger(__name__)
@@ -43,8 +44,9 @@ def testing_login():
 
 @auth.route("/login", methods=['POST'])
 def login():
-
     credentials = request.get_json(silent=True)
+    _logger.info("Credentials:  %s", credentials)
+
     if not isinstance(credentials, dict):
         error_abort('Credentials provided are not a JSON object')
 
@@ -56,6 +58,24 @@ def login():
         return _login_with_google_oauth2(auth_code)
 
     error_abort('No credentials were specified', code=requests.codes.unauthorized)
+
+@auth.route("/azure_ad_login", methods=['POST'])
+def azure_ad_login():
+    print(request)
+    return 200
+
+def _build_msal_app(cache=None, authority=None):
+    return msal.ConfidentialClientApplication(
+        current_app.config.CLIENT_ID, 
+        authority=authority or current_app.config.AUTHORITY,
+        client_credential=current_app.config.CLIENT_SECRET, 
+        token_cache=cache
+    )
+
+def _build_auth_code_flow(authority=None, scopes=None):
+    return _build_msal_app(authority=authority).initiate_auth_code_flow(
+        scopes or [],
+        redirect_uri=url_for("authorized", _external=True))
 
 
 def _login_with_credentials(credentials):
@@ -136,6 +156,11 @@ def _login_with_google_oauth2(auth_code):
     login_user(user)
 
     return _make_success_login_response(user, user_info)
+
+def _login_with_azure_ad():
+    print(request)
+    
+
 
 
 @auth.route("/logout", methods=['POST'])

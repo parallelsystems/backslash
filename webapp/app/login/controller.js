@@ -14,8 +14,8 @@ export default Controller.extend(UnauthenticatedRouteMixin, {
       self.set("login_error", null);
       const credentials = this.getProperties(["username", "password"]);
       self.get("session").authenticate("authenticator:token", credentials).then(
-        function() {},
-        function() {
+        function () { },
+        function () {
           self.set("login_error", "Invalid username and/or password");
         }
       );
@@ -28,24 +28,49 @@ export default Controller.extend(UnauthenticatedRouteMixin, {
       self
         .get("torii")
         .open("google-oauth2")
-        .then(function(auth) {
+        .then(function (auth) {
           return self
             .get("session")
             .authenticate("authenticator:token", auth)
             .then(
-              function(data) {
+              function (data) {
                 return data;
               },
-              function(error) {
+              function (error) {
                 self.set("login_error", error.error);
               }
             );
         })
-        .finally(function() {
+        .finally(function () {
           self.set("loading", false);
         });
-
       return;
-    }
+    },
+
+    login_microsoft() {
+      let self = this;
+      self.set("loading", true);
+      self.set("login_error", null);
+      self
+        .get("torii")
+        .open("azure-ad-oauth2-v2")
+        .then(function (auth) {
+          return self
+            .get("session")
+            .authenticate("authenticator:token", auth)
+            .then(
+              function (data) {
+                return data;
+              },
+              function (error) {
+                self.set("login_error", error.error);
+              }
+            );
+        })
+        .finally(function () {
+          self.set("loading", false);
+        });
+      return;
+    },
   }
 });

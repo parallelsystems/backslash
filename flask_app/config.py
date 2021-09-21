@@ -31,6 +31,7 @@ def get_runtime_config_private_dict():
         (cfg.key, cfg.value)
         for cfg in models.AppConfig.query.all()
     )
+    print(returned)
     return returned
 
 

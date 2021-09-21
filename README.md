@@ -1,9 +1,10 @@
+
 # Backslash
 
-|                       |                                                                                    |
-|-----------------------|------------------------------------------------------------------------------------|
-| Build Status          | ![Build Status](https://secure.travis-ci.org/getslash/backslash.png?branch=master) |
-| Supported Versions    | ![Supported Versions](https://img.shields.io/badge/python-3.6-green.svg)    |
+|                    |                                                                                    |
+| ------------------ | ---------------------------------------------------------------------------------- |
+| Build Status       | ![Build Status](https://secure.travis-ci.org/getslash/backslash.png?branch=master) |
+| Supported Versions | ![Supported Versions](https://img.shields.io/badge/python-3.6-green.svg)           |
 
 Backslash is a centralized service for tracking execution of automated tests.
 
@@ -36,6 +37,16 @@ Then run DB migrations:
 
 ``` shell
 pipenv run manage db upgrade
+```
+If this fails try creating a backslash user and trying again
+```shell
+$ psql
+> CREATE USER backslash with PASSWORD 'backslash';
+> GRANT ALL PRIVILEGES ON DATABASE backslash TO backslash;
+```
+You may also need to set the database uri in `app.yml`
+```yaml
+SQLALCHEMY_DATABASE_URI: postgresql://backslash:backslash@localhost:5432/backslash
 ```
 
 ### Running Tests

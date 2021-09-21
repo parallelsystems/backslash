@@ -1,39 +1,47 @@
 from contextlib import contextmanager
-import logbook
 
-import requests
 from flask import abort
-from flask_simple_api import error_abort
 from flask_security import current_user
-
+from flask_simple_api import error_abort
+import logbook
+import requests
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.exc import DataError
 
-from .blueprint import API
-from ...models import db, Session, Test, Comment, User, Role, Entity, TestVariation, TestMetadata, UserStarredTests
-from ...utils import get_current_time, statuses
+from . import comments  # pylint: disable=unused-import
+from . import errors  # pylint: disable=unused-import
+from . import labels  # pylint: disable=unused-import
+from . import metadata  # pylint: disable=unused-import
+from . import preferences  # pylint: disable=unused-import
+from . import quick_search  # pylint: disable=unused-import
+from . import replication  # pylint: disable=unused-import
+from . import sessions  # pylint: disable=unused-import
+from . import setup  # pylint: disable=unused-import
+from . import timing  # pylint: disable=unused-import
+from . import warnings  # pylint: disable=unused-import
+from ...models import (
+    Comment,
+    Entity,
+    Role,
+    Session,
+    Test,
+    TestMetadata,
+    TestVariation,
+    User,
+    UserStarredTests,
+    db,
+)
+from ...utils import get_current_time, profiling, statuses
 from ...utils.api_utils import requires_role
+from ...utils.json import sanitize_json
 from ...utils.subjects import get_or_create_subject_instance
 from ...utils.test_information import get_or_create_test_information_id
 from ...utils.users import has_role
-from ...utils.json import sanitize_json
-from ...utils import profiling
-
+from .blueprint import API
+from .blueprint import blueprint  # pylint: disable=unused-import
 
 ##########################################################################
 
-from . import comments # pylint: disable=unused-import
-from . import errors # pylint: disable=unused-import
-from . import labels # pylint: disable=unused-import
-from . import metadata # pylint: disable=unused-import
-from . import preferences # pylint: disable=unused-import
-from . import quick_search # pylint: disable=unused-import
-from . import replication # pylint: disable=unused-import
-from . import sessions # pylint: disable=unused-import
-from . import setup # pylint: disable=unused-import
-from . import timing # pylint: disable=unused-import
-from . import warnings # pylint: disable=unused-import
-from .blueprint import blueprint # pylint: disable=unused-import
 
 
 NoneType = type(None)
