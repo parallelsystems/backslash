@@ -1,14 +1,11 @@
+from flask import abort
+from flask_simple_api import error_abort
 import requests
-
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
-from flask import abort
-
-from flask_simple_api import error_abort
-
-from ...models import Session, Test, db, SessionMetadata, TestMetadata
+from ...models import Session, SessionMetadata, Test, TestMetadata, db
 from .blueprint import API
 
 
@@ -73,7 +70,8 @@ def _get_metadata_model(entity_type):
 def add_test_metadata(id: int, metadata: dict):
     try:
         test = Test.query.filter(Test.id == id).one()
-        test.metadata_objects.append(TestMetadata(metadata_item=metadata))
+        for key, value in metadata.items():
+            test.metadatas.append(TestMetadata(key=key, metadata_item=value))
     except NoResultFound:
         abort(requests.codes.not_found)
     db.session.commit()
@@ -83,8 +81,9 @@ def add_test_metadata(id: int, metadata: dict):
 def add_session_metadata(id: int, metadata: dict):
     try:
         session = Session.query.filter(Session.id == id).one()
-        session.metadata_objects.append(
-            SessionMetadata(metadata_item=metadata))
+        for key, value in metadata.items():
+            session.metadata_items.append(
+                SessionMetadata(key=key, metadata_item=value))
     except NoResultFound:
         abort(requests.codes.not_found)
     db.session.commit()

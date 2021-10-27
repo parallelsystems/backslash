@@ -46,3 +46,25 @@ def test_create_session_with_metadata(client, metadata):
 def test_add_metadata_nonexistent_session(nonexistent_session):
     with raises_not_found():
         nonexistent_session.set_metadata('foo', 'bar')
+
+
+def test_add_test_metadata(started_test):
+    """Add test metadata to a started test"""
+    new_metadata = {"foo": "bar", "baz": 1}
+    params = {"id": started_test.id, "metadata": new_metadata}
+    started_test.client.api.call_function("add_test_metadata", params)
+    updated_metadata = started_test.get_metadata()
+    for key, value in new_metadata.items():
+        assert updated_metadata[key] == value
+
+    
+
+def test_add_session_metadata(started_session):
+    """Add session metadata to a started session"""
+    new_metadata = {"foo": "bar", "baz": 1}
+    params = {"id": started_session.id, "metadata": new_metadata}
+    started_session.client.api.call_function("add_session_metadata", params)
+    updated_metadata = started_session.get_metadata()
+    for key, value in new_metadata.items():
+        assert updated_metadata[key] == value
+    
