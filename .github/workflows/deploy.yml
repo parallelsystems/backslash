@@ -5,7 +5,18 @@
 
 name: Create and publish a Docker image
 
-on: workflow_dispatch
+on: 
+  push: 
+    branches:
+      - 'ps-develop'
+    tags: 
+      - 'v*'
+      - 'test*'
+  pull_request:
+    branches:
+      - 'ps-develop'
+  workflow_dispatch:
+
 
 env:
   REGISTRY: ghcr.io
