@@ -59,9 +59,9 @@ jobs:
           flavor: |
             latest=${{ env.STABLE }} 
           tags: |
-            type=ref, event=tag
-            type=ref, event=branch
-            type=raw, value=unstable, enable=${{ !env.STABLE }}
+            type=ref, event=tag, enable=true
+            type=ref, event=branch, enable=true
+            type=raw, value=unstable, enable=!${{ env.STABLE }}
             type=raw, value=stable, enable=${{ env.STABLE }}
 
 
