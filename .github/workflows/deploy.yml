@@ -24,6 +24,7 @@ env:
   IMAGE_NAME: ${{ github.repository }}
   STABLE: ${{ github.ref == 'refs/heads/ps-main' }}
 
+
 jobs:
   build-and-push-image:
     runs-on: ubuntu-latest
@@ -57,6 +58,12 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           flavor: |
             latest=${{ env.STABLE }} 
+          tags: |
+            type=ref, event=tag
+            type=ref, event=branch
+            type=raw, value=unstable, enable=${{ !env.STABLE }}
+            type=raw, value=stable, enable=${{ env.STABLE }}
+
 
       - name: Build and push Docker image
         uses: docker/build-push-action@a66e35b9cbcf4ad0ea91ffcaf7bbad63ad9e0229
@@ -64,5 +71,5 @@ jobs:
           context: .
           file: docker/Dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ fromJSON(${{ steps.meta.outputs.tags }})
           labels: ${{ steps.meta.outputs.labels }}
