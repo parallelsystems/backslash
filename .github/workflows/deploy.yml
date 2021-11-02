@@ -12,6 +12,10 @@ on:
       - 'ps-main'
     tags: 
       - '*'
+  pull_request:
+    branches:
+      - 'ps-develop'
+      - 'ps-main'
 
 env:
   REGISTRY: ghcr.io
@@ -57,8 +61,7 @@ jobs:
             type=ref, event=tag, enable=true
             type=ref, event=branch, enable=true
             type=raw, value=unstable, enable=${{ env.UNSTABLE }}
-            type=raw, value=stable, enable=${{ env.STABLE }}
-
+            type=raw, value=stable, enable=${{ env.STABLE }} 
 
       - name: Build and push Docker image
         uses: docker/build-push-action@a66e35b9cbcf4ad0ea91ffcaf7bbad63ad9e0229
