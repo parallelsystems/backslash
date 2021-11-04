@@ -11,13 +11,13 @@ ADD ./api-server /api-server
 RUN sudo chown -R rust:rust /api-server
 RUN cd /api-server && rm -rf target && cargo test --release && cargo build --release
 
-FROM ubuntu:16.04
+FROM ubuntu:20.04
 
-env PYTHON_VERSION 3.6
-env PYTHON_EXECUTABLE python$PYTHON_VERSION
+ENV PYTHON_VERSION 3.9
+ENV PYTHON_EXECUTABLE python$PYTHON_VERSION
 
-env LC_ALL C.UTF-8
-env LANG C.UTF-8
+ENV LC_ALL C.UTF-8
+ENV LANG C.UTF-8
 
 RUN apt-get update
 RUN apt-get -y install build-essential software-properties-common libpq-dev nginx curl redis-server gcc sudo libsasl2-dev libldap2-dev wget git
