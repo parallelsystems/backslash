@@ -7,10 +7,6 @@ name: Create and publish a Docker image
 
 on: 
   push: 
-    branches:
-      - 'ps-develop'
-      - 'ps-main'
-      - 'build-deploy-docker-img'
     tags: 
       - '*'
   pull_request:
@@ -22,7 +18,7 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
   STABLE: ${{ github.ref == 'refs/heads/ps-main' }}
-  UNSTABLE: ${{ github.ref != 'refs/heads/ps-main' }}
+  UNSTABLE: ${{ github.ref == 'refs/heads/ps-develop' }}
 
 
 jobs:
@@ -63,6 +59,7 @@ jobs:
           tags: |
             type=ref, event=tag, enable=true
             type=ref, event=branch, enable=true
+            type=ref, event=pr, enable=true
             type=raw, value=unstable, enable=${{ env.UNSTABLE }}
             type=raw, value=stable, enable=${{ env.STABLE }} 
 
