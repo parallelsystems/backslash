@@ -2,11 +2,11 @@ import os
 import subprocess
 
 if __name__ == "__main__":
-    travis_tag = os.environ.get('TRAVIS_TAG')
-    if travis_tag:
-        version = travis_tag
-    else:
+    github_event = os.environ.get('GITHUB_EVENT')
+    if github_event == "tags":
         version = subprocess.check_output('git describe --tags', shell=True, encoding='utf-8').strip()
+    else:
+        version = os.environ.get("GITHUB_SHA")
 
     with open('flask_app/__version__.py', 'w') as f:
         print(f'__version__ = "{version}"', file=f)

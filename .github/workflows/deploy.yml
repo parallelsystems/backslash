@@ -47,8 +47,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - run: printenv
+
       - name: Fix versions
-        run: python scripts/travis_version_fix.py
+        run: python scripts/github_version_fix.py
 
       - name: Extract metadata (tags, labels) for Docker
         id: meta
