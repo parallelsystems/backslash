@@ -1,15 +1,13 @@
 import os
 
 if __name__ == "__main__":
-    github_event_name = os.environ.get('GITHUB_EVENT_NAME')
     github_ref_type = os.environ.get('GITHUB_REF_TYPE')
     github_sha = os.environ.get("GITHUB_SHA")
-    github_ref = os.environ.get("GITHUB_REF")
+    github_ref_name = os.environ.get("GITHUB_REF_NAME")
     if github_ref_type == "tag":
-        version = github_ref.replace("refs/tags/", "")
+        version = github_ref_name
     elif github_ref_type == "branch":
-        branch = github_ref.replace("refs/heads/", "")
-        version = f"{github_sha}_{branch}"
+        version = f"{github_sha[:8]}_{github_ref_name}"
     else:
         version = github_sha
 
