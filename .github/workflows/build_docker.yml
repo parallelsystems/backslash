@@ -40,8 +40,9 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - run: printenv
-      - run: cat $GITHUB_EVENT_PATH
-      - run: echo ${{ github.event }}
+      - run: echo ${{ fromJSON(github.event.release.prerelease) }}
+      - run: echo ${{ fromJSON(github.event.release) }}
+      - run: echo ${{ fromJSON(github.event) }}
 
       - name: Fix versions
         run: python scripts/github_version_fix.py
@@ -60,11 +61,11 @@ jobs:
             type=raw, value=prerelease, enable=${{ env.PRERELEASE }}
             type=raw, value=release, enable=${{ env.RELEASE }} 
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@a66e35b9cbcf4ad0ea91ffcaf7bbad63ad9e0229
-        with:
-          context: .
-          file: docker/Dockerfile
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+      # - name: Build and push Docker image
+      #   uses: docker/build-push-action@a66e35b9cbcf4ad0ea91ffcaf7bbad63ad9e0229
+      #   with:
+      #     context: .
+      #     file: docker/Dockerfile
+      #     push: true
+      #     tags: ${{ steps.meta.outputs.tags }}
+      #     labels: ${{ steps.meta.outputs.labels }}
