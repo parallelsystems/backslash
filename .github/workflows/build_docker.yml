@@ -12,8 +12,8 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  RELEASE: ${{ !github.event.release.prerelease }}
-  PRERELEASE: ${{ github.event.release.prerelease }}
+  RELEASE: ${{ github.event.release.prerelease != true }}
+  PRERELEASE: ${{ github.event.release.prerelease == true }}
 
 
 jobs:
