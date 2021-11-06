@@ -40,7 +40,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - run: printenv
-      - run: cat GITHUB_EVENT_PATH
+      - run: cat $GITHUB_EVENT_PATH
       - run: echo ${{ github.event }}
 
       - name: Fix versions
