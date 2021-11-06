@@ -12,8 +12,8 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  STABLE: ${{ github.ref == 'refs/heads/ps-main' }}
-  UNSTABLE: ${{ github.ref == 'refs/heads/ps-develop' }}
+  RELEASE: ${{ !github.event.release.prerelease }}
+  PRERELEASE: ${{ github.event.release.prerelease }}
 
 
 jobs:
@@ -40,6 +40,8 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - run: printenv
+      - run: cat GITHUB_EVENT_PATH
+      - run: echo ${{ github.event }}
 
       - name: Fix versions
         run: python scripts/github_version_fix.py
@@ -50,13 +52,13 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           flavor: |
-            latest=${{ env.STABLE }} 
+            latest=${{ env.RELEASE }} 
           tags: |
             type=ref, event=tag, enable=true
             type=ref, event=branch, enable=true
             type=ref, event=pr, enable=true
-            type=raw, value=unstable, enable=${{ env.UNSTABLE }}
-            type=raw, value=stable, enable=${{ env.STABLE }} 
+            type=raw, value=prerelease, enable=${{ env.PRERELEASE }}
+            type=raw, value=release, enable=${{ env.RELEASE }} 
 
       - name: Build and push Docker image
         uses: docker/build-push-action@a66e35b9cbcf4ad0ea91ffcaf7bbad63ad9e0229

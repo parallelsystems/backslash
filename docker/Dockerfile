@@ -19,8 +19,10 @@ ENV PYTHON_EXECUTABLE python$PYTHON_VERSION
 ENV LC_ALL C.UTF-8
 ENV LANG C.UTF-8
 
+ENV DEBIAN_FRONTEND noninteractive
+
 RUN apt-get update
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install build-essential software-properties-common libpq-dev nginx curl redis-server gcc sudo libsasl2-dev libldap2-dev wget git
+RUN apt-get -y install build-essential software-properties-common libpq-dev nginx curl redis-server gcc sudo libsasl2-dev libldap2-dev wget git
 
 
 # nginx
