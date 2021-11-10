@@ -17,16 +17,22 @@
       {{/if}}
 
     </div>
-    <div class="col p-2 d-flex justify-content-end">
-      <a href="#/tests?search=test_info_id%3D{{test_model.test_info_id}}" class="ml-3 text-white">{{fa-icon "history"}} {{#bs-tooltip placement="auto"}}Previous Executions{{/bs-tooltip}}<span class="d-none d-xl-inline-block">Previous Executions...</span> </a>
+      <div class="col p-2 d-flex justify-content-end">
+        <a href="#/tests?search=test_info_id%3D{{test_model.test_info_id}}" class="ml-3 text-white">{{fa-icon "history"}} {{#bs-tooltip placement="auto"}}Previous Executions{{/bs-tooltip}}<span class="d-none d-xl-inline-block">Previous Executions...</span> </a>
+      </div>
     </div>
-    </div>
-    <div class="row">
+            <span class="inline params text-monospace">
+        {{#each display_params as |param|}}
+          <span class="param-name">{{#if param.full_name}}{{#bs-tooltip}}{{param.full_name}}{{/bs-tooltip}}{{/if}}{{param.short_name}}</span>=<code>{{param.value}}</code>{{if (not param.last) ','}}
+        {{/each}}
+        </span>
+    {{#if show_docstring}}
+      <div class="row multiline">
         <code>
              {{docstring}}
           </code>
       </div>
-
+    {{/if}}
   <div class="row p-2">
     <!-- first column -->
     <div class="col text-muted">

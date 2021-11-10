@@ -1,7 +1,6 @@
 import Component from "@ember/component";
 import EmberObject from "@ember/object";
 import { computed } from "@ember/object";
-import { oneWay } from "@ember/object/computed";
 import { inject as service } from "@ember/service";
 
 export default Component.extend({
@@ -12,6 +11,7 @@ export default Component.extend({
   session_model: null,
   test_metadata: null,
   test_model: null,
+  show_docstring: false,
 
   slash_tags: computed("test_metadata", function() {
     let metadata = this.get("test_metadata");
@@ -86,6 +86,44 @@ export default Component.extend({
       "Local Branch": test_model.get("scm_local_branch"),
       "Remote Branch": test_model.get("scm_remote_branch"),
     });
+    return returned;
+  }),
+  display_params: computed("test_model.{parameters,variation}", function() {
+    let seen = new Set();
+    let returned = [];
+
+    for (let params of [
+      this.get("test_model.parameters"),
+      this.get("test_model.variation"),
+    ]) {
+      if (!params) {
+        continue;
+      }
+      for (var key in params) {
+        if (params.hasOwnProperty(key)) {
+          if (!seen.has(key)) {
+            let parts = key.split(".");
+            let short = key;
+            let full = null;
+            if (parts.length > 1) {
+              short = parts[parts.length - 1];
+              full = key;
+            }
+            returned.push({
+              name: key,
+              short_name: short,
+              full_name: full,
+              value: params[key],
+              last: false,
+            });
+            seen.add(key);
+          }
+        }
+      }
+    }
+    if (returned.length > 0) {
+      returned[returned.length - 1].last = true;
+    }
     return returned;
   }),
 });

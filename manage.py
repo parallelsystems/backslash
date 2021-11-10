@@ -1,25 +1,26 @@
 #! /usr/bin/python
 from __future__ import print_function
+
+from collections import defaultdict
+import multiprocessing
 import os
-import sys
 import random
 import string
 import subprocess
-from collections import defaultdict
+import sys
 
-from _lib.bootstrapping import from_project_root, from_env_bin
-
-from _lib.params import APP_NAME
-from _lib.frontend import frontend, ember
-from _lib.db import db
-from _lib.users import user
-from _lib.celery import celery
-from _lib.slash_running import suite
-from _lib.utils import interact
 import click
 import logbook
 import logbook.compat
-import multiprocessing
+
+from _lib.bootstrapping import from_env_bin, from_project_root
+from _lib.celery import celery
+from _lib.db import db
+from _lib.frontend import ember, frontend
+from _lib.params import APP_NAME
+from _lib.slash_running import suite
+from _lib.users import user
+from _lib.utils import interact
 
 ##### ACTUAL CODE ONLY BENEATH THIS POINT ######
 
@@ -41,11 +42,12 @@ cli.add_command(suite)
 @click.option('-p', '--port', default=8000, type=int)
 @click.option('-b', '--backend-name', default=None)
 def docker_start(port, backend_name):
+    import flask_migrate
+    import gunicorn.app.base
+
     from flask_app.app import create_app
     from flask_app.models import db
     from flask_app.utils import profiling
-    import flask_migrate
-    import gunicorn.app.base
 
     _ensure_conf()
 
@@ -151,7 +153,7 @@ def testserver(tmux, port):
     app = create_app({'DEBUG': True, 'TESTING': True, 'SECRET_KEY': 'dummy', 'SECURITY_PASSWORD_SALT': 'dummy'})
     logbook.StreamHandler(sys.stderr, level='DEBUG').push_application()
     logbook.compat.redirect_logging()
-    app.run(port=port, extra_files=extra_files, use_reloader=False)
+    app.run(port=port, extra_files=extra_files, use_reloader=True)
 
 def _run_tmux_frontend(port):
     tmuxp = os.path.join(os.path.dirname(sys.executable), 'tmuxp')
@@ -192,8 +194,8 @@ def _run_fulltest(extra_args=()):
 
 @cli.command()
 def shell():
-    from flask_app.app import create_app
     from flask_app import models
+    from flask_app.app import create_app
 
     app = create_app({'SQLALCHEMY_ECHO': True})
 
