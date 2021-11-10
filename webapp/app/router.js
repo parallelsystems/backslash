@@ -23,6 +23,7 @@ Router.map(function() {
       this.route("comments");
     });
     this.route("comments");
+    this.route("static_report");
   });
 
   this.route("test", { path: "/tests/:test_id" }, function() {

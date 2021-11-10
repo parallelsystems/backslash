@@ -66,6 +66,13 @@
 	{{/nav.link-to}}
   {{/nav.item}}
 
+
+  {{#nav.item}}
+    {{#nav.link-to "session.static_report"}}
+      Static Report
+	{{/nav.link-to}}
+  {{/nav.item}}
+
   {{#if current_test }}
 	{{#if (s-starts-with router.currentRouteName 'session.test') }}
       {{#nav.item}}

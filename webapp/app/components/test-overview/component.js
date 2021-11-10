@@ -36,6 +36,19 @@ export default Component.extend({
     return returned;
   }),
 
+  docstring: computed("test_metadata", function() {
+    let metadata = this.get("test_metadata");
+    if (!metadata) {
+      return null;
+    }
+    let docstring = metadata["docstring"];
+    if (!docstring) {
+      return null;
+    }
+
+    return docstring;
+  }),
+
   metadata_links: computed("test_metadata", function() {
     let returned = [];
     let metadata = this.get("test_metadata");
