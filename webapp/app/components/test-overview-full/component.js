@@ -6,7 +6,7 @@ import { inject as service } from "@ember/service";
 export default Component.extend({
   runtime_config: service(),
 
-  classNames: "p-3 test-overview overview",
+  classNames: "p-3 test-overview-full overview",
 
   session_model: null,
   test_metadata: null,

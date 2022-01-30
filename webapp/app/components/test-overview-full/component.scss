@@ -1,0 +1,31 @@
+& {
+    .test-overview-full {
+        border-radius: 5px;
+        overflow: hidden;
+    }
+    .multiline {
+        white-space: pre-line;
+        padding-left: 10px;
+        display: inline-block;
+    }
+    .param {
+        padding-left: 15px;
+        padding-top: 5px;
+        font-size: 20px;
+    }
+
+}
+
+
+
+@media (min-width: 768px) {
+    & {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 0px;
+        z-index: 1;
+        background: white;
+        border-bottom: 1px solid silver;
+    }
+
+}

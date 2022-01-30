@@ -1,5 +1,5 @@
-{{session-overview session_model=session_model user=user metadata=metadata timings=timings}}
+{{session-overview-full session_model=session_model user=user metadata=metadata timings=timings}}
 
 {{#each tests as |test_model|}}
-  {{test-overview test_model=test_model session_model=session_model test_metadata=(get test_metadata test_model.id) show_docstring=true}}
+  {{test-overview-full test_model=test_model session_model=session_model test_docstring=(get test_docstrings test_model.id) test_metadata=(get test_metadata test_model.id) show_details=true}}
 {{/each}}

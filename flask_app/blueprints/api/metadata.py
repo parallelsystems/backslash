@@ -1,16 +1,16 @@
+from docutils.core import publish_parts, publish_string
+from flask import abort
+from flask_simple_api import error_abort
 import requests
-
+from sphinxcontrib.napoleon import Config, GoogleDocstring
 from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import NoResultFound
 
-from flask import abort
-
-from flask_simple_api import error_abort
-
-from ...models import Session, Test, db, SessionMetadata, TestMetadata
+from ...models import Session, SessionMetadata, Test, TestMetadata, db
 from .blueprint import API
 
+napoleon_config = Config(napoleon_use_param=True, napoleon_use_rtype=True)
 
 @API
 def set_metadata(entity_type: str, entity_id: int, key: str, value: object):
@@ -40,6 +40,16 @@ def _set_metadata_dict(*, entity_type, entity_id, metadata, commit=True):
 @API(require_login=False)
 def get_metadata(entity_type: str, entity_id: (int, str)):
     return _get_metadata_query(entity_type=entity_type, entity_id=entity_id).scalar() or {}
+
+@API(require_login=False)
+def get_docstring(test_id: (int, str), format:str=None):
+    metadata = _get_metadata_query(entity_type='test', entity_id=test_id).scalar() or {}
+    docstring = metadata.get("docstring").strip()
+    if format in ['rst', 'html']:
+        docstring = str(GoogleDocstring(docstring, napoleon_config))
+        if format == 'html':
+            docstring = publish_parts(docstring, writer_name="html")['html_body']
+    return docstring
 
 
 def _get_metadata_query(*, entity_type, entity_id):

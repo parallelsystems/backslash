@@ -13,7 +13,7 @@ export default Route.extend(ComplexModelRoute, {
       session_id: session_model.id,
       page_size: 1000,
     });
-    let test_metadata = {}
+    let test_metadata = {};
     for await (const test of tests.content) {
       let data = await self
       .get("api")
@@ -21,8 +21,22 @@ export default Route.extend(ComplexModelRoute, {
         entity_type: "test",
         entity_id: parseInt(test.id),
       }).then(r => r.result);
+      delete data.docstring
+      delete data.local_log_path
+      // delete data['slash::tags']
       test_metadata[test.id] = data;
     };
+    let test_docstrings = {};
+    for await (const test of tests.content) {
+      let data = await self
+      .get("api")
+      .call("get_docstring", {
+        test_id: parseInt(test.id),
+      }).then(r => r.result);
+      test_docstrings[test.id] = data;
+    };
+    console.log(JSON.stringify(test_docstrings))
+
     
     return hash({
       session_model: session_model,
@@ -33,8 +47,9 @@ export default Route.extend(ComplexModelRoute, {
         page_size: 100,
       }),
       metadata: this.modelFor("session").metadata,
-      tests: tests,
+      tests: tests.sortBy("test_index"),
       test_metadata: test_metadata,
+      test_docstrings: test_docstrings,
     });
   },
 });

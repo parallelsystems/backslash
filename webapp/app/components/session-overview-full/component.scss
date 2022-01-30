@@ -1,0 +1,27 @@
+& {
+    .session-overview {
+        border-radius: 5px;
+        overflow: hidden;
+        font-size: 20px;
+    }
+    .success {
+        font-size: 15px
+    }
+    .skipped {
+        font-size: 15px
+    }
+    .failed {
+        font-size: 15px
+    }
+}
+
+@media (min-width: 768px) {
+    & {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 0px;
+        z-index: 2;
+        background: white;
+        border-bottom: 1px solid silver;
+    }
+}
