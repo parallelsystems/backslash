@@ -178,6 +178,23 @@ class TestSearchContext(SearchContext):
     def search__error_message(self, op, value):
         return _negate_maybe(op, Error.query.filter(Error.test_id == Test.id, Error.message.contains(value)).exists().correlate(Test))
 
+    @only_ops(['=', '!=', '~'])
+    def search__tag(self, op, value):
+        return self._metadata_query(op, 'slash::tag', "names", value)
+    
+    def _metadata_query(self, op, key, subkey, value):
+        print(f"{key} {subkey} {op} {value}")
+        op_func = op.func if op != '!=' else operator.eq
+        filter_expression = (TestMetadata.key == key)
+        if subkey:
+            filter_expression &= op_func(TestMetadata.metadata_item[key].astext, value)
+        else:
+
+            filter_expression &= op_func(TestMetadata.metadata_item[0].astext, value)
+        returned = db.session.query(TestMetadata).filter(TestMetadata.test_id == Test.id, filter_expression).exists().correlate(Test)
+        return _negate_maybe(op, returned)
+
+
 
 
 class SessionSearchContext(SearchContext):
