@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function(environment) {
+module.exports = function (environment) {
   let ENV = {
     modulePrefix: 'webapp',
     rootURL: null,
@@ -19,27 +19,34 @@ module.exports = function(environment) {
 
     APP: {
 
-	available_page_sizes: [25, 50, 100, 200],
-	default_page_size: 25,
+      available_page_sizes: [25, 50, 100, 200],
+      default_page_size: 25,
 
     },
 
 
     torii: {
-        sessionServiceName: 'session',
-        providers: {
-            'google-oauth2': {
-                // redirectUri is assigned in app.js...
-                apiKey: null,
-                scope: 'email profile'
-            }
+      sessionServiceName: 'session',
+      providers: {
+        'google-oauth2': {
+          // redirectUri is assigned in app.js...
+          apiKey: null,
+          scope: 'email profile',
+          allowUnsafeRedirect: true
+        },
+        'azure-ad2-oauth2': {
+          tenantId: null,
+          apiKey: null,
+          scope: "openid profile email user.read",
+          allowUnsafeRedirect: true,
         }
+      }
     }
   };
 
   ENV['ember-simple-auth'] = {
-      authorizer: 'authorizer:token',
-      store: 'session-store:local-storage'
+    authorizer: 'authorizer:token',
+    store: 'session-store:local-storage'
   };
 
   if (environment === 'development') {
