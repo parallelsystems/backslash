@@ -67,7 +67,7 @@ def get_oauth2_identity_azure(auth_code):
         client_id, authority=authority,
         client_credential=client_secret, token_cache=None)
 
-    user_info = client.acquire_token_by_authorization_code(code=auth_code, scopes=["User.read"], redirect_uri="http://localhost:8000")["id_token_claims"]
+    user_info = client.acquire_token_by_authorization_code(code=auth_code, scopes=["User.read"], redirect_uri=redirect_uri)["id_token_claims"]
 
     return {
         "email" : user_info["email"], 
