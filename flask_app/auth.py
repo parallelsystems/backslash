@@ -54,6 +54,8 @@ def login():
     auth_code = credentials.get('authorizationCode')
     provider = credentials.get("provider")
 
+    _logger.info('AuthorizationCode recieved: {}', credentials)
+
     if provider == "google-oauth2":
         return _login_with_google_oauth2(auth_code)
 

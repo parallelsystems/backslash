@@ -64,15 +64,19 @@ def get_oauth2_identity_azure(auth_code):
 
     _logger.info('get_oauth2_identity: Using redirect URI {!r}', redirect_uri)
 
-    redirect_uri = os.environ.get(REDIRECT_URI)
-
-    _logger.info('get_oauth2_identity: Using redirect URI {!r}', redirect_uri)
+    _logger.info("Redirect URI from the environment: {}", os.environ.get("REDIRECT_URI"))
 
     client = msal.ConfidentialClientApplication(
         client_id, authority=authority,
         client_credential=client_secret, token_cache=None)
 
-    user_info = client.acquire_token_by_authorization_code(code=auth_code, scopes=["User.read"], redirect_uri=redirect_uri)["id_token_claims"]
+    token = client.acquire_token_by_authorization_code(code=auth_code, scopes=["User.read"], redirect_uri=redirect_uri)
+
+    if "error" in token:
+        _logger.error(token["error_description"])
+        assert False
+    
+    user_info = token["id_token_claims"]
 
     return {
         "email" : user_info["email"], 
