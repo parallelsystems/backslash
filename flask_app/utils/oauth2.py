@@ -1,4 +1,5 @@
 import logbook
+import os 
 
 from flask import current_app, request
 from httplib2 import Http
@@ -61,7 +62,11 @@ def get_oauth2_identity_azure(auth_code):
 
     redirect_uri = request.host_url[:-1]
 
-    _logger.debug('get_oauth2_identity: Using redirect URI {!r}', redirect_uri)
+    _logger.info('get_oauth2_identity: Using redirect URI {!r}', redirect_uri)
+
+    redirect_uri = os.environ.get(REDIRECT_URI)
+
+    _logger.info('get_oauth2_identity: Using redirect URI {!r}', redirect_uri)
 
     client = msal.ConfidentialClientApplication(
         client_id, authority=authority,
