@@ -53,6 +53,7 @@ def login():
 
     auth_code = credentials.get('authorizationCode')
     provider = credentials.get("provider")
+    redirect_uri = credentials.get("redirectUri")
 
     _logger.info('AuthorizationCode recieved: {}', credentials)
 
@@ -60,7 +61,7 @@ def login():
         return _login_with_google_oauth2(auth_code)
 
     if provider == "azure-ad2-oauth2":
-        return _login_with_azure_oauth2(auth_code)
+        return _login_with_azure_oauth2(auth_code, redirect_uri)
 
     error_abort('No credentials were specified', code=requests.codes.unauthorized)
 
@@ -144,9 +145,9 @@ def _login_with_google_oauth2(auth_code):
 
     return _make_success_login_response(user, user_info)
 
-def _login_with_azure_oauth2(auth_code):
+def _login_with_azure_oauth2(auth_code, redirect_uri):
     """Logs in with azure oath2"""
-    user_info = get_oauth2_identity_azure(auth_code)
+    user_info = get_oauth2_identity_azure(auth_code, redirect_uri)
     if not user_info:
         error_abort('Could not complete OAuth2 exchange', code=requests.codes.unauthorized)
 

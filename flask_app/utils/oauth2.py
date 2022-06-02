@@ -44,7 +44,7 @@ def get_oauth2_identity(auth_code):
     _logger.debug('Found user info: {}', info)
     return info
 
-def get_oauth2_identity_azure(auth_code):
+def get_oauth2_identity_azure(auth_code, redirect_uri):
     """Gets identity from azure auth_code""" 
 
     config_dict = config.get_runtime_config_private_dict()
@@ -60,13 +60,7 @@ def get_oauth2_identity_azure(auth_code):
         _logger.error('No OAuth2 client secret configured')
         return
 
-    redirect_uri = request.host_url[:-1]
-
     _logger.info('get_oauth2_identity: Using redirect URI {!r}', redirect_uri)
-
-    _logger.info("Redirect URI from the environment: {}", os.environ.get("REDIRECT_URI"))
-
-    redirect_uri = os.environ.get("REDIRECT_URI", redirect_uri)
 
     client = msal.ConfidentialClientApplication(
         client_id, authority=authority,
