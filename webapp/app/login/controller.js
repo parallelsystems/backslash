@@ -10,8 +10,6 @@ export default Controller.extend(UnauthenticatedRouteMixin, {
 
   actions: {
     login() {
-      // eslint-disable-next-line no-console
-      console.log("Sign in button was clicked.");
       let self = this;
       self.set("login_error", null);
       const credentials = this.getProperties(["username", "password"]);
@@ -24,8 +22,6 @@ export default Controller.extend(UnauthenticatedRouteMixin, {
     },
 
     login_google() {
-      // eslint-disable-next-line no-console
-      console.log("google button was clicked.");
       let self = this;
       self.set("loading", true);
       self.set("login_error", null);
