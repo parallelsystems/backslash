@@ -1,11 +1,9 @@
 import logbook
-import os 
 
 from flask import current_app, request
 from httplib2 import Http
 from apiclient.discovery import build
 from oauth2client.client import OAuth2WebServerFlow
-import requests
 import msal
 
 from .. import config
