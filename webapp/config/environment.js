@@ -40,6 +40,7 @@ module.exports = function(environment) {
                 scope: "openid profile email user.read",
                 allowUnsafeRedirect: true,
            }
+      }
     }
   };
 
