@@ -82,7 +82,7 @@ class SessionResource(ModelResource):
         returned = filter_by_statuses(returned, self.MODEL)
 
         end = time.time()
-        _logger.info(f"Amount of time taken to make database call: {end-start}")
+        _logger.info(f"Amount of time taken to get iterator: {end-start}")
 
         return returned
 
@@ -157,7 +157,7 @@ class TestResource(ModelResource):
                 returned = returned.filter(self.MODEL.test_index < args.before_index).order_by(self.MODEL.test_index.desc()).limit(1).all()
 
         end = time.time()
-        _logger.info(f"Amount of time taken to make database call: {end-start}")
+        _logger.info(f"Amount of time taken to get iterator: {end-start}")
 
         return returned
 
