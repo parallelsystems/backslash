@@ -3,6 +3,7 @@ import math
 import os
 
 import requests
+import time
 
 from flask import Blueprint, abort, request, jsonify, current_app, Response
 from flask_restful import Api, reqparse
@@ -20,8 +21,10 @@ from ..utils.users import has_role
 from ..utils.rest import ModelResource
 from ..filters import filter_by_statuses
 from ..search import get_orm_query_from_search_string
+import logbook
 
 blueprint = Blueprint('rest', __name__, url_prefix='/rest')
+_logger = logbook.Logger(__name__)
 
 
 rest = Api(blueprint)
@@ -52,6 +55,7 @@ class SessionResource(ModelResource):
         return _get_object_by_id_or_logical_id(self.MODEL, object_id)
 
     def _get_iterator(self):
+        start = time.time()
         args = session_parser.parse_args()
 
         if args.id is not None:
@@ -76,6 +80,9 @@ class SessionResource(ModelResource):
             returned = returned.filter(Session.user_id == args.user_id)
 
         returned = filter_by_statuses(returned, self.MODEL)
+
+        end = time.time()
+        _logger.info(f"Amount of time taken to make database call: {end-start}")
 
         return returned
 
@@ -118,6 +125,7 @@ class TestResource(ModelResource):
         return rendered_tests
 
     def _get_iterator(self):
+        start = time.time()
         args = test_query_parser.parse_args()
         user_id = user_id = args.user_id or getattr(current_user, 'id', None)
         if args.id is not None:
@@ -147,6 +155,9 @@ class TestResource(ModelResource):
                 returned = returned.filter(self.MODEL.test_index > args.after_index).order_by(self.MODEL.test_index.asc()).limit(1).all()
             elif args.before_index is not None:
                 returned = returned.filter(self.MODEL.test_index < args.before_index).order_by(self.MODEL.test_index.desc()).limit(1).all()
+
+        end = time.time()
+        _logger.info(f"Amount of time taken to make database call: {end-start}")
 
         return returned
 
