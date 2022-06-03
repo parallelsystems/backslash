@@ -24,7 +24,7 @@ class RestResource(Resource):
         if object_id is not None:
             obj = self._get_object_by_id(object_id)
             stop = time.time()
-            _logger.info(f"Amount of time taken to get resource: {stop-start}".)
+            _logger.info(f"Amount of time taken to get resource: {stop-start}")
             return self._format_result({self._get_single_object_key(): self._render_single(obj, in_collection=False)}, metadata=metadata)
         else:
             with statement_timeout_context():
@@ -34,7 +34,7 @@ class RestResource(Resource):
                     returned = self._sort(returned, metadata)
                     returned = self._paginate(returned, metadata)
             stop = time.time()
-            _logger.info(f"Amount of time taken to get resource: {stop-start}".)
+            _logger.info(f"Amount of time taken to get resource: {stop-start}")
             return self._format_result(self._render_many(returned, in_collection=True), metadata=metadata)
 
     def _filter(self, iterator, metadata):
