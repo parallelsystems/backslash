@@ -55,8 +55,6 @@ def login():
     provider = credentials.get("provider")
     redirect_uri = credentials.get("redirectUri")
 
-    _logger.info('AuthorizationCode recieved: {}', credentials)
-
     if provider == "google-oauth2":
         return _login_with_google_oauth2(auth_code)
 
