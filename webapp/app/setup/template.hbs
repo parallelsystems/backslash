@@ -73,6 +73,37 @@
 
 	      <div class="checkbox">
 	        <label>
+	          {{input type="checkbox" id="social-azure-enable" checked=config.azure_oauth2_enabled}}
+	          Enable Azure AD OAuth2 Authentication
+	        </label>
+	      </div>
+
+	      {{#if config.azure_oauth2_enabled}}
+	        <div class="form-group">
+	          <label class="control-label" for="azure-oauth2-client-id">OAuth2 Client ID</label>
+	          {{input class="form-control" id="azure-oauth2-client-id" value=config.azure_oauth2_client_id placeholder="XXXXXX" required=true}}
+	        </div>
+
+			<div class="form-group">
+			  <label class="control-label" for="azure-oauth2-client-secret">OAuth2 Client Secret</label>
+			  {{input class="form-control" id="azure-oauth2-client-secret" value=config.azure_oauth2_client_secret placeholder="XXXXXX" required=true}}
+			</div>
+
+			<div class="form-group">
+			  <label class="control-label" for="azure-oauth2-tenant-id">OAuth2 Tenant ID</label>
+			  {{input class="form-control" id="azure-oauth2-tenant-id" value=config.azure_oauth2_tenant_id placeholder="XXXXXX" required=true}}
+			</div>
+
+	        <p class="help-block">Can be obtained from <a href="https://portal.azure.com/">the Azure Developer Console</a></p>
+	      {{/if}}
+
+
+        </div>
+
+        <div class="form-group">
+
+	      <div class="checkbox">
+	        <label>
 	          {{input type="checkbox" id="ldap-enable" checked=config.ldap_login_enabled}}
 	          Enable LDAP Authentication
 	        </label>

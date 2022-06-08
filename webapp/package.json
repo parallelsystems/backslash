@@ -75,6 +75,7 @@
     "sass": "^1.17.3",
     "showdown": "^1.6.4",
     "torii": "^0.10.1",
+    "torii-azure-ad2-provider": "^1.0.5",
     "twix": "^1.2.1"
   },
   "engines": {

@@ -29,6 +29,11 @@ export default Route.extend(ApplicationRouteMixin, {
       let cfg = config.torii;
       cfg.providers["google-oauth2"].apiKey =
         model.runtime_config.google_oauth2_client_id;
+      cfg.providers["azure-ad2-oauth2"].apiKey =
+        model.runtime_config.azure_oauth2_client_id;
+      cfg.providers["azure-ad2-oauth2"].tenantId =
+        model.runtime_config.azure_oauth2_tenant_id;
+
       this.load_current_user();
     }
   },

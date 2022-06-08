@@ -40,6 +40,7 @@ raven = {extras = ["flask"], version = "*"}
 redis = "*"
 watchdog = "*"
 weber_utils = "*"
+msal = "*"
 
 [dev-packages]
 Flask-Loopback = "*"
