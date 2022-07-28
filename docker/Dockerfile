@@ -1,4 +1,4 @@
-FROM node:8 as frontend-builder
+FROM node:10 as frontend-builder
 # build frontend
 RUN npm install -g ember-cli
 

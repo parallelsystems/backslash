@@ -4,6 +4,7 @@ from flask import current_app, request
 from httplib2 import Http
 from apiclient.discovery import build
 from oauth2client.client import OAuth2WebServerFlow
+import msal
 
 from .. import config
 
@@ -40,6 +41,42 @@ def get_oauth2_identity(auth_code):
     info = _get_user_info(credentials)
     _logger.debug('Found user info: {}', info)
     return info
+
+def get_oauth2_identity_azure(auth_code, redirect_uri):
+    """Gets identity from azure auth_code""" 
+
+    config_dict = config.get_runtime_config_private_dict()
+    client_id = config_dict['azure_oauth2_client_id']
+    client_secret = config_dict['azure_oauth2_client_secret']
+    authority = f"https://login.microsoftonline.com/{config_dict['azure_oauth2_tenant_id']}"
+
+    if not client_id:
+        _logger.error('No OAuth2 client id configured')
+        return
+
+    if not client_secret:
+        _logger.error('No OAuth2 client secret configured')
+        return
+
+    _logger.info('get_oauth2_identity: Using redirect URI {!r}', redirect_uri)
+
+    client = msal.ConfidentialClientApplication(
+        client_id, authority=authority,
+        client_credential=client_secret, token_cache=None)
+
+    token = client.acquire_token_by_authorization_code(code=auth_code, scopes=["User.read"], redirect_uri=redirect_uri)
+
+    if "error" in token:
+        _logger.error(token["error_description"])
+        assert False
+    
+    user_info = token["id_token_claims"]
+
+    return {
+        "email" : user_info["email"], 
+        "first_name" : user_info["name"].split()[0],
+        "last_name" : user_info["name"].split()[-1],
+    }
 
 
 def _get_user_info(credentials):

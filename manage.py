@@ -130,7 +130,8 @@ def _ensure_conf():
     if not os.path.isfile(private_filename):
         with open(private_filename, 'w') as f:
             for secret_name in ('SECRET_KEY', 'SECURITY_PASSWORD_SALT'):
-                f.write('{}: {!r}\n'.format(secret_name, _generate_secret_string()))
+                # either pull value from environment or generate random value
+                f.write('{}: {!r}\n'.format(secret_name, os.environ.get(secret_name, _generate_secret_string())))
 
 def _generate_secret_string(length=50):
     return "".join([random.choice(string.ascii_letters) for i in range(length)])

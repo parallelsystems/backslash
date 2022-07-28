@@ -12,7 +12,7 @@ from flask_security.utils import login_user, verify_password
 
 from .config import get_runtime_config_private_dict
 from .models import db, Role, User
-from .utils.oauth2 import get_oauth2_identity
+from .utils.oauth2 import get_oauth2_identity, get_oauth2_identity_azure
 
 _logger = logbook.Logger(__name__)
 
@@ -52,8 +52,14 @@ def login():
         return _login_with_credentials(credentials)
 
     auth_code = credentials.get('authorizationCode')
-    if auth_code:
+    provider = credentials.get("provider")
+    redirect_uri = credentials.get("redirectUri")
+
+    if provider == "google-oauth2":
         return _login_with_google_oauth2(auth_code)
+
+    if provider == "azure-ad2-oauth2":
+        return _login_with_azure_oauth2(auth_code, redirect_uri)
 
     error_abort('No credentials were specified', code=requests.codes.unauthorized)
 
@@ -127,6 +133,19 @@ def _login_with_ldap(email, password, config):
 
 def _login_with_google_oauth2(auth_code):
     user_info = get_oauth2_identity(auth_code)
+    if not user_info:
+        error_abort('Could not complete OAuth2 exchange', code=requests.codes.unauthorized)
+
+    _check_alowed_email_domain(user_info)
+
+    user = get_or_create_user(user_info)
+    login_user(user)
+
+    return _make_success_login_response(user, user_info)
+
+def _login_with_azure_oauth2(auth_code, redirect_uri):
+    """Logs in with azure oath2"""
+    user_info = get_oauth2_identity_azure(auth_code, redirect_uri)
     if not user_info:
         error_abort('Could not complete OAuth2 exchange', code=requests.codes.unauthorized)
 

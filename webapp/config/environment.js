@@ -31,9 +31,16 @@ module.exports = function(environment) {
             'google-oauth2': {
                 // redirectUri is assigned in app.js...
                 apiKey: null,
-                scope: 'email profile'
-            }
-        }
+                scope: 'email profile',
+                allowUnsafeRedirect: true
+            },
+            'azure-ad2-oauth2': {
+                tenantId: null,
+                apiKey: null,
+                scope: "openid profile email user.read",
+                allowUnsafeRedirect: true,
+           }
+      }
     }
   };
 
