@@ -1,15 +1,13 @@
+from contextlib import contextmanager
+import os
 import random
+import re
 import sys
 import time
-import re
-import os
-from contextlib import contextmanager
 from uuid import uuid4
 
-import logbook
-
 import click
-
+import logbook
 
 _DATABASE_URI_RE = re.compile(r"(?P<driver>(?P<db_type>sqlite|postgresql)(\+.*)?):\/\/(?P<host>[^/]*)\/(?P<db>.+)")
 
@@ -24,14 +22,15 @@ def _create_sqlite(path):
 
 def _create_postgres(match):
     import sqlalchemy
+
     from flask_app.models import db
 
     uri = match.group(0)
     db_name = match.group('db')
     try:
-        sqlalchemy.create_engine(uri).connect()
+        sqlalchemy.create_engine(uri, server_sider_cursors=True).connect()
     except sqlalchemy.exc.OperationalError:
-        engine = sqlalchemy.create_engine('{}://{}/postgres'.format(match.group('driver'), match.group('host')))
+        engine = sqlalchemy.create_engine('{}://{}/postgres'.format(match.group('driver'), match.group('host')), server_sider_cursors=True)
         conn = engine.connect()
         conn.execute("commit")
         conn.execute("create database {} with encoding = 'UTF8'".format(db_name))
@@ -77,7 +76,7 @@ def wait(num_retries=60, retry_sleep_seconds=1):
         if retry > 0:
             time.sleep(retry_sleep_seconds)
         try:
-            sqlalchemy.create_engine(uri).connect()
+            sqlalchemy.create_engine(uri, server_sider_cursors=True).connect()
         except sqlalchemy.exc.OperationalError as e:
             if 'does not exist' in str(e):
                 break
@@ -130,9 +129,10 @@ def downgrade():
 
 @contextmanager
 def _migrate_context(app=None):
+    import flask_migrate
+
     from flask_app.app import create_app
     from flask_app.models import db
-    import flask_migrate
     if app is None:
         app = create_app()
 
