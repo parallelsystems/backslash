@@ -46,6 +46,7 @@ def get_oauth2_identity_azure(auth_code, redirect_uri):
     """Gets identity from azure auth_code""" 
 
     config_dict = config.get_runtime_config_private_dict()
+    _logger.info(f"PRivate Config: {config_dict}")
     client_id = config_dict['azure_oauth2_client_id']
     client_secret = config_dict['azure_oauth2_client_secret']
     authority = f"https://login.microsoftonline.com/{config_dict['azure_oauth2_tenant_id']}"

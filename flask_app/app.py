@@ -36,6 +36,7 @@ def create_app(config=None, setup_logging=True):
                 app.config.update(yaml.full_load(yaml_file))
 
     app.config.update(config)
+    print(app.config)
 
     app.before_request(profile_request_start)
     app.after_request(profile_request_end)

@@ -45,6 +45,7 @@ def testing_login():
 def login():
 
     credentials = request.get_json(silent=True)
+    _logger.info(f"Credentials request: {credentials}")
     if not isinstance(credentials, dict):
         error_abort('Credentials provided are not a JSON object')
 
@@ -66,11 +67,13 @@ def login():
 
 def _login_with_credentials(credentials):
     config = get_runtime_config_private_dict()
+    _logger.info(f"Private conf: {config}")
     username = credentials.get('username')
     password = credentials.get('password')
 
     email = _fix_email(username, config)
     user = User.query.filter_by(email=email).first()
+    _logger.info(f"Found user: {user}")
 
     if current_app.config['TESTING']:
         if user is None:
@@ -82,6 +85,7 @@ def _login_with_credentials(credentials):
 
     if user is not None and user.password:
         if verify_password(password, user.password):
+            _logger.info(f"password: {password} db password: {user.password}")
             login_user(user)
             return _make_success_login_response(user)
     _logger.debug('Could not login user locally (no user or password mismatch)')
