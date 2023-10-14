@@ -2,18 +2,16 @@ from flask import g, request
 from flask_simple_api import error_abort
 import flux
 import requests
-
-from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import IntegrityError
-from ...auth import get_or_create_user
+from sqlalchemy.orm.exc import NoResultFound
 
+from ...auth import get_or_create_user
+from ...models import Session, SessionMetadata, Test, User, db
 from ...search import get_orm_query_from_search_string
-from ...models import Session, Test, db, SessionMetadata, User
-from ...utils import get_current_time, statuses
+from ...utils import get_current_time, profiling, statuses
 from ...utils.api_utils import requires_role
 from ...utils.subjects import get_or_create_subject_instance
 from ...utils.users import has_role
-from ...utils import profiling
 from .blueprint import API
 
 NoneType = type(None)
@@ -21,7 +19,7 @@ NoneType = type(None)
 _DEFAULT_DELETE_GRACE_PERIOD_SECONDS = 60 * 60 * 24 * 30
 
 
-@API(version=3)
+@API(version=3, generates_activity=True)
 def report_session_start(logical_id: str=None,
                          parent_logical_id: (NoneType, str)=None,
                          is_parent_session: bool=False,
@@ -109,7 +107,7 @@ def report_session_start(logical_id: str=None,
     return returned
 
 
-@API(version=2)
+@API(version=2, generates_activity=True)
 def report_session_end(id: int, duration: (int, NoneType)=None, has_fatal_errors: bool=False):
     try:
         session = Session.query.filter(Session.id == id).one()
